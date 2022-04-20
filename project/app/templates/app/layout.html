@@ -1,0 +1,53 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- BOOTSTRAP -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+
+    <!-- Load React. -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+    <!-- Add babel -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="navbar-brand" id="app-home">Home</div>
+
+        <div>
+            <ul class="navbar-nav mr-auto">
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <div class="nav-link" id="my-profile" data-username="{{ user.username }}">
+                        {{ user.username }}
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="TODO">Log Out</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="TODO">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="TODO">Register</a>
+                </li>
+            {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="body">
+        {% block body %}
+        {% endblock %}
+    </div>
+</body>
+</html>
