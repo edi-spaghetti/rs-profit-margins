@@ -1,6 +1,7 @@
 import requests
 from uuid import uuid4
 from functools import wraps
+from time import time
 
 from django.db import models
 
@@ -25,10 +26,10 @@ def value_wrapper(func):
 
     @wraps(func)
     def wrapper(self):
-        # TODO: cache timeout
-        if self._cache is None:
-            # TODO: error handling on cache update failure
-            self.update_cache()
+
+        # TODO: error handling on cache update failure
+        if self.update_cache():
+            print('Updated cache!')
 
         # special gold pieces item is not in actual cache,
         # and has a fixed price
@@ -43,12 +44,22 @@ class Item(models.Model):
     """An internal cache of the OSRS items database."""
 
     _cache = None
+    _cache_timeout = 60  # seconds
+    _cache_updated_at = None
 
     osrs_id = models.IntegerField(unique=True)
     name = models.CharField(max_length=80)
 
     @classmethod
     def update_cache(cls):
+
+        condition = (
+            cls._cache is None
+            or cls._cache_updated_at is None
+            or (cls._cache_updated_at + cls._cache_timeout < time())
+        )
+        if not condition:
+            return False
 
         try:
             prices = requests.get(f'{api_base_url}/latest',
@@ -67,6 +78,7 @@ class Item(models.Model):
 
         # cache to class attribute and return
         cls._cache = prices
+        cls._cache_updated_at = time()
         return True
 
     @property
